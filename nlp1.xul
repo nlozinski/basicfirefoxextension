@@ -1,0 +1,375 @@
+<?xml version="1.0"?>
+<overlay id="nlp1" 
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ <statusbar id="status-bar">
+  <statusbarpanel id="my-panel" label="Home Inventory Extension"  />
+ </statusbar>
+</overlay>
+<menupopup id="menu_ToolsPopup">
+   <menuitem id=nlp1" label="Home Inventory Extension;"
+          oncommand="bs.onMenuItemCommand(event);"/>
+</menupopup>
+<?xml-stylesheet href="style.css" type="text/css"?>
+<!DOCTYPE window>
+
+<window title="Home Inventory Extension" orient="horizontal" id="findfile-window"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+ 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+ 	<script type="text/javascript">
+
+
+
+var rooms=new Array();//stores the items in the rooms
+var roomNames=new Array();//stores the names of the rooms
+
+function itemExists (item, roomName){//checks to see if item has been created
+    for (var k=rooms.length-1; k>=0; k--){
+        if (rooms[k].roomName==roomName){
+           if (rooms[k].name==item){
+            return "1";
+            }
+        }
+    }
+    return "0";
+}
+
+function roomExists (roomName){//checks to see if room has been created
+    for (var k=roomNames.length-1; k>=0; k--){
+        if (roomNames[k]==roomName){
+            return "1";
+        }
+    }
+    return "0";
+}
+
+function removeItem (roomName,name){//removes the specified item
+    for (var k=rooms.length-1; k>=0; k--){
+        if (rooms[k].roomName==roomName){
+         if (rooms[k].name==name){
+            rooms.splice(k,1);
+            }
+        }
+    }
+
+}
+
+function removeRoom (roomName){//removes the specified room
+    for (var k=rooms.length-1; k>=0; k--){
+        if (rooms[k].roomName==roomName){
+            rooms.splice(k,1);
+
+        }
+    }
+    for (var j=roomNames.length-1; j>=0; j--){
+        if (roomNames[j]==roomName){
+            roomNames.splice(j,1)
+
+        }
+    }
+}
+
+function makeItem (roomName,name, value, rValue, location, year, warrantyLength){//creates the makeItem object
+  this.roomName=roomName;
+  this.name=name;
+  this.value=value;
+  this.rValue=rValue;
+  this.location=location;
+  this.year=year;
+  this.warrantyLength=warrantyLength;
+  alert ("Made new inventory item called " + this.name);
+
+}
+
+function addKitchen(){//pre loaded kitchen
+    roomNames[roomNames.length]= "Kitchen";
+    rooms[rooms.length]= new makeItem ("Kitchen","Microwave", "100", "75", "counter", "2004", "25");
+    rooms[rooms.length]= new makeItem ("Kitchen","Stove", "200", "125", "ground", "2004", "25");
+    rooms[rooms.length]= new makeItem ("Kitchen", "Cutlery", "120", "90", "drawer", "2000", "0");
+    rooms[rooms.length]= new makeItem ("Kitchen", "Refrigerator", "200", "125", "ground", "2004", "25");
+    rooms[rooms.length]= new makeItem ("Kitchen", "Toaster", "40", "30", "counter", "2008", "0");
+}
+
+function addLR(){//pre loaded living room
+    roomNames[roomNames.length]="Living Room";
+    rooms[rooms.length]= new makeItem ("Living Room","Couch", "200", "150", "ground", "2004", "0");
+    rooms[rooms.length]= new makeItem ("Living Room","Television", "200", "150", "wall", "2004", "10");
+    rooms[rooms.length]= new makeItem ("Living Room", "Coffee Table", "50", "40", "ground", "2000", "0");
+    rooms[rooms.length]= new makeItem ("Living Room", "Lamp", "25", "15", "ground", "2004", "0");
+    rooms[rooms.length]= new makeItem ("Living Room", "Remote", "20", "10", "between the cushions", "2008", "0");
+}       
+
+function addLib(){//pre loaded library
+    roomNames[roomNames.length]="Library";
+    rooms[rooms.length]= new makeItem ("Library","Cathedral and the Bazaar", "15", "10", "shelf", "2004", "0");
+    rooms[rooms.length]= new makeItem ("Library","Design Patterns", "60", "50", "shelf", "2004", "0");
+    rooms[rooms.length]= new makeItem ("Library", "Effective Java", "30", "20", "shelf", "2004", "0");
+    rooms[rooms.length]= new makeItem ("Library", "Sams Teach Yourself C++", "25", "15", "shelf", "2004", "0");
+    rooms[rooms.length]= new makeItem ("Library", "Harry Potter", "15", "10", "shelf", "2004", "0");
+}  
+
+function totalVal(){//outputs the total value in inventory
+    var total=0;
+    for (var j=rooms.length-1; j>=0; j--){
+           total=parseInt(total) + parseInt(rooms[j].value);
+   }
+   resultbox=document.getElementById("result");
+   resultbox.setAttribute("value", "The total value of the inventory is $" + total);
+}
+
+function roomTotalVal(){//outputs the total value in a specified room
+    var total=0;
+    var input=prompt("Enter the name of the room you would like the value for: ", " ");
+    var gotroom=roomExists(input);
+    if (gotroom=="0"){
+        while (gotroom=="0"){
+            input=prompt("Please enter a valid room: ", " ");
+            gotroom=roomExists(input);
+        }
+    }
+     for (var k=rooms.length-1; k>=0; k--){
+        if (rooms[k].roomName==input){
+         total= parseInt(total) + parseInt (rooms[k].value);
+         }
+     }
+     resultbox=document.getElementById("result");
+   resultbox.setAttribute("value", "The total value of the inventory in " + input +  " is $" + total);
+ }
+
+function showRooms(){//displays all the rooms
+
+    var output=roomNames.join();
+    resultbox=document.getElementById("result");
+    resultbox.setAttribute("value", "The rooms that have been entered are: " + output);
+}
+    
+        
+    
+function showInventory(){//outputs the inventory of a specified room
+       var input=prompt("Enter the name of the room you would like the inventory of: ", " ");
+       var gotroom=roomExists(input);
+        if (gotroom=="0"){
+         while (gotroom=="0"){
+            input=prompt("Please enter a valid room: ", " ");
+            gotroom=roomExists(input);
+        }
+    }
+    
+   resultbox=document.getElementById("result");
+
+   var outputArray=new Array();
+   var counter="0";
+   for (var j=rooms.length-1; j>=0; j--){
+        if (rooms[j].roomName==input){
+        outputArray[counter]=rooms[j].name;
+        counter++;
+        }
+    }
+var output=outputArray.join();
+resultbox.setAttribute("value", "The contents of " + input + " are " + output);
+}
+
+makeItem.prototype.showInventory=showInventory;
+
+function Rename(){//renames an item or room
+    var truth="0";
+    var decision= prompt("Enter R if you would like to rename a room, or enter I if you would like to rename or edit an item: ", " ");
+    if (decision!="R"){
+        if (decision !="I"){
+        decision=prompt("Enter either R or I", " ");
+    }
+    }
+    if (decision=="R"){
+        var roomName= prompt ("Please enter the name of an existing room: ", " ");
+        var d=roomExists(roomName);
+        if (d=="0"){
+            while (d=="0"){
+            roomName= prompt("Room does not exist. Please enter an existing room: ", " ");
+            d=roomExists(roomName);
+            }
+        }
+        var newName= prompt ("Please enter the new name of the room: ", " ");
+        for (var i=rooms.length-1; i>=0; i--){
+            if (rooms[i].roomName==roomName){
+                rooms[i].roomName=newName;
+            }
+        }
+
+        for (var j=roomNames.length-1; j>=0; j--){
+                       
+            if (roomNames[j]==roomName){
+                roomNames[j]=newName;
+
+            }
+        }
+        alert ("Room " + roomName + " has been changed to: " + newName);
+}
+    if (decision=="I"){
+    var roomName= prompt ("Please enter the name of an existing room: ", " ");
+        var d=roomExists(roomName);
+        if (d=="0"){
+            while (d=="0"){
+            roomName= prompt("Room does not exist. Please enter an existing room: ", " ");
+            d=roomExists(roomName);
+            }
+        }
+    var itemName= prompt ("Please enter the name of an existing item: ", " ");
+    d=itemExists(itemName, roomName);
+   if (d=="0"){
+            while (d=="0"){
+            roomName= prompt("Item does not exist. Please enter an existing item: ", " ");
+            d=itemExists(itemName,roomName);
+            }
+        }
+        for (var k=rooms.length-1; k>=0; k--){
+        if (rooms[k].roomName==roomName){
+           if (rooms[k].name==itemName){
+            rooms[k].name=prompt ("Enter the new name of the item: ", " ");
+            rooms[k].rValue=prompt ("Enter the new replacement value of the item: ", " ");
+            rooms[k].location=prompt ("Enter the new location of the item: ", " ");
+            }
+        }
+    }
+    } 
+}
+
+function changeInventory(value){
+    if (value==1){//creates a new room
+        var roomName= prompt("Enter the name of the new room: ", " ");
+        roomNames[roomNames.length]=roomName;
+
+    }
+    if (value==2){//gathers information for new items
+        var rValue= "0";
+        var warrantyLength= "0";
+        var roomName=prompt ("Please enter the name of an existing room: ", " ");
+        var d=roomExists(roomName);
+        if (d=="0"){
+            while (d=="0"){
+            roomName= prompt("Room does not exist. Please enter an existing room: ", " ");
+            d=roomExists(roomName);
+            }
+        }
+        var objectName= prompt("Enter the name of the object: ", " ");
+        var objectValue= prompt("Enter the value of the object: ", " ");
+        var replaceable="0";
+        while (replaceable=="0"){
+                var replaceable1= prompt("Enter Y if the object is replaceable, enter N if the object is not: ", " ");
+            if (replaceable1=="Y"){
+            rValue= prompt("Please enter the replacement value of the object: ", " ");
+            replaceable="1";
+        }
+            else if (replaceable1=="N"){
+            replaceable="1";
+        }
+        }
+        var location=prompt("Enter the location of the object: ", " ");
+        var year=prompt("Enter the year the item was purchased: ", " ");
+        var warranty="0";
+        while (warranty=="0"){
+            var warranty1= prompt("Enter Y if the object has a warranty, enter N if the object does not: ", " ");
+            if (warranty1=="Y"){
+            warrantyLength= prompt("Please enter the length of the warranty: ", " ");
+            warranty="1";
+        }
+            else if (warranty1=="N"){
+            warranty="1";
+        }
+        }
+    rooms[rooms.length]= new makeItem (roomName,objectName, objectValue, rValue, location, year, warrantyLength);
+
+    }
+    if (value==3){//provides interface for removing a room
+        var roomName= prompt("Please enter the name of the room you would like to remove: ", " ");
+         var d= roomExists(roomName);
+        if (d==0){
+            while (d==0){
+                roomName=prompt("Please enter a valid room: ", " ");
+                d= roomExists(roomName);
+            }
+        }
+        removeRoom (roomName);
+    }
+    if (value==4){//provides interface for removing an item
+        var roomName= prompt("Please enter the room you would like to remove from: ", " ");
+        var d= roomExists(roomName);
+        if (d==0){
+            while (d==0){
+                roomName=prompt("Please enter a valid room: ", " ");
+                d= roomExists(roomName);
+            }
+        }
+        var itemName= prompt ("Please enter the item to be removed: ", " ");
+        var c= itemExists (itemName, roomName);
+         if (c==0){
+            while (c==0){
+                roomName=prompt("Please enter a valid item: ", " ");
+                c= itemExists(itemName, roomName);
+            }
+        }
+
+        removeItem (roomName, itemName);
+        
+    }
+}
+
+
+    
+</script>
+
+<groupbox style="margin:28px;padding:20px;" flex="1">
+<vbox align="center" flex="4">
+  <label class="heading" flex="1" value="Welcome to the Beta Version of Home Inventory!" />
+  
+    <label class="body"> 
+    
+    Please select the appropriate option below (you must add a room first). 
+    </label>
+
+</vbox>
+<hbox align="center">
+<spacer flex="20"/>
+</hbox>
+
+<hbox align="center" flex="20">
+<spacer flex="12"/>
+<button label="Add Room" oncommand="changeInventory('1')"/>
+<spacer flex="12"/>
+<button label="Add Item" oncommand="changeInventory('2')"/>
+<spacer flex="12"/>
+<button label="Remove Room" oncommand="changeInventory('3')"/>
+<spacer flex="12"/>
+<button label="Remove Item" oncommand="changeInventory('4')"/>
+<spacer flex="12"/>
+<button label="View Inventory" oncommand="showInventory()"/>
+<spacer flex="12"/>
+<button label="Rename/Edit" oncommand="Rename()"/>
+<spacer flex="12"/>
+</hbox>
+
+<hbox align="center" flex="6">
+<spacer flex="12"/>
+<button label="Quick Add Kitchen w/ Items" oncommand="addKitchen()"/>
+<spacer flex="12"/>
+<button label="Quick Add Living Room w/ Items" oncommand="addLR()"/>
+<spacer flex="12"/>
+<button label="Quick Add Library w/ Items" oncommand="addLib()"/>
+<spacer flex="12"/>
+<button label="Total Value of all Inventory" oncommand="totalVal()"/>
+<spacer flex="12"/>
+<button label="Total Value of Room" oncommand="roomTotalVal()"/>
+<spacer flex="12"/>
+<button label="Show Rooms" oncommand="showRooms()"/>
+<spacer flex="12"/>
+</hbox>
+
+<textbox multiline="true"
+         id="result"/>
+
+</groupbox>
+
+</window>
+
+
+
+

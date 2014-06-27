@@ -1,0 +1,7 @@
+content nlp1 content/
+overlay chrome://browser/content/browser.xul chrome://nlp1/content/nlp1.xul
+
+locale nlp1 en-US locale/en-US/
+
+skin nlp1 classic/1.0 skin/
+style chrome://global/content/customizeToolbar.xul chrome://nlp1/skin/style.css
